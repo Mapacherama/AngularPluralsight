@@ -1,3 +1,4 @@
+import { AuthService } from './user/auth.service';
 import { appRoutes } from './../routes';
 import { ToastrService } from './common/toastr.service';
 import { EventsListCompononent } from './events/events-list.component';
@@ -32,7 +33,7 @@ import { Error404Component } from './errors/404.component';
     RouterModule.forRoot(appRoutes)
 
   ],
-  providers: [EventService, ToastrService, EventListResolver, EventRouteActivator, {
+  providers: [EventService, ToastrService, EventListResolver, EventRouteActivator, AuthService,{
     provide: 'canDeactivateCreateEvent',
     useValue: checkDirtyState
   }],
