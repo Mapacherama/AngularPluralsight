@@ -1,4 +1,5 @@
-import { Component,EventEmitter,OnInit, Input, Output} from '@angular/core';
+import { IEvent } from './shared/event.model';
+import { Component, Input} from '@angular/core';
 
 @Component({
   selector: 'event-thumbnail',
@@ -28,8 +29,7 @@ import { Component,EventEmitter,OnInit, Input, Output} from '@angular/core';
   `]
 })
 export class EventThumbnailComponent {
-  @Input() event: any;
-  someProperty:any = "some value";
+  @Input() event: IEvent;
 
 
   getStartTimeStyle(): any{
