@@ -89,6 +89,6 @@ export class ProductEditComponent implements OnInit {
     }
 
     // Navigate back to the product list
-    this.router.navigate['products']
+    this.router.navigate(['products'])
   }
 }
