@@ -1,3 +1,4 @@
+import { ProductResolved } from './../product';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
@@ -22,12 +23,14 @@ export class ProductEditComponent implements OnInit {
               private router: Router) { }
 
               ngOnInit(): void {
-                this.route.paramMap.subscribe(
-                  params => {
-                const id = +params.get('id');
-                this.getProduct(id);
-                  });
-            }
+                this.route.data.subscribe(data => {
+                  const resolvedData: ProductResolved =
+                  data['resolvedData'];
+                  this.errorMessage = resolvedData.error;
+                  this.onProductRetrieved(resolvedData.product);
+
+                })
+              }
 
 
   getProduct(id: number): void {
