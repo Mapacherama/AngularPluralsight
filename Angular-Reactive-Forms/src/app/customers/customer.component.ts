@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';
 
 import { Customer } from './customer';
 
@@ -36,6 +37,11 @@ export class CustomerComponent implements OnInit {
   customer = new Customer();
   emailMessage: string;
 
+  private validationMessages = {
+    required: 'Please enter your email address.',
+    email: 'Please enter a valid email address.'
+  };
+
   constructor(private fb: FormBuilder) { }
 
   ngOnInit(): void {
@@ -51,6 +57,17 @@ export class CustomerComponent implements OnInit {
       rating: [null, ratingRange(1,5)],
       sendCatalog: true
     });
+
+    this.customerForm.get('notification').valueChanges.subscribe(
+  value => this.setNotification(value)
+    );
+
+    const emailControl = this.customerForm.get('emailGroup.email');
+    emailControl.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setMessage(emailControl)
+    );
   }
 
   populateTestData(): void {
@@ -59,6 +76,14 @@ export class CustomerComponent implements OnInit {
       lastName: 'Harkness',
       sendCatalog: false
     })
+  }
+
+  setMessage(c: AbstractControl): void {
+    this.emailMessage = '';
+    if ((c.touched || c.dirty) && c.errors) {
+      this.emailMessage = Object.keys(c.errors).map(
+        key => this.validationMessages[key]).join(' ');
+    }
   }
 
   setNotification(notifyVia: string): void {
