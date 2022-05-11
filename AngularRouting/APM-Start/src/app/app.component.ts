@@ -11,6 +11,7 @@ import {
 } from '@angular/router';
 
 import { AuthService } from './user/auth.service';
+import { MessageService } from './messages/message.service';
 
 @Component({
   selector: 'pm-root',
@@ -33,7 +34,24 @@ export class AppComponent {
     return '';
   }
 
-  constructor(private authService: AuthService, private router: Router) {
+  get isMessageDisplayed(): boolean {
+    return this.messageService.isDisplayed;
+  }
+
+  displayMessages(): void {
+    // Example of primary and secondary routing together
+    // this.router.navigate(['/login', {outlets: { popup: ['messages']}}]); // Does not work
+    // this.router.navigate([{outlets: { primary: ['login'], popup: ['messages']}}]); // Works
+    this.router.navigate([{ outlets: { popup: ['messages'] } }]); // Works
+    this.messageService.isDisplayed = true;
+  }
+
+  hideMessages(): void {
+    this.router.navigate([{ outlets: { popup: null } }]);
+    this.messageService.isDisplayed = false;
+  }
+
+  constructor(private authService: AuthService, private router: Router, private messageService: MessageService) {
     router.events.subscribe((RouterEvent: Event) => {
       this.checkRouterEvent(RouterEvent);
     });
