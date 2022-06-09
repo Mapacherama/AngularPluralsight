@@ -1,10 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { catchError, map, Observable, tap, throwError } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  map,
+  Observable,
+  tap,
+  throwError,
+  shareReplay,
+  BehaviorSubject,
+} from 'rxjs';
 
 import { Product } from './product';
 import { isNgTemplate } from '@angular/compiler';
+import { ProductCategoryService } from '../product-categories/product-category.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,17 +24,50 @@ export class ProductService {
   private suppliersUrl = 'api/suppliers';
 
   products$ = this.http.get<Product[]>(this.productsUrl).pipe(
-    map(products => products.map(product => ({
-      ...product,
-      price: product.price ? product.price * 1.5 : 0,
-      searchKey: [product.productName]
-    } as Product))),
     tap((data) => console.log('Products: ', JSON.stringify(data))),
     catchError(this.handleError)
   );
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private productCategoryService: ProductCategoryService
+  ) {}
 
+  selectedProductChanged(selectedProductId: number): void {
+    this.productSelectedSubject.next(selectedProductId);
+  }
+
+  productsWithCategory$ = combineLatest([
+    this.products$,
+    this.productCategoryService.productCategories$,
+  ]).pipe(
+    map(([products, categories]) =>
+      products.map(
+        (product) =>
+          ({
+            ...product,
+            price: product.price ? product.price * 1.5 : 0,
+            category: categories.find((c) => product.categoryId === c.id)?.name,
+            searchKey: [product.productName],
+          } as Product)
+      )
+    ),
+    shareReplay(1)
+  );
+
+  private productSelectedSubject = new BehaviorSubject<number>(0);
+  productSelectedAction$ = this.productSelectedSubject.asObservable();
+
+  selectedProduct$ = combineLatest([
+    this.productsWithCategory$,
+    this.productSelectedAction$,
+  ]).pipe(
+    map(([products, selectedProductId]) =>
+      products.find((product) => product.id === selectedProductId)
+    ),
+    tap((product) => console.log('selectedProduct', product)),
+    shareReplay(1)
+  );
 
   private fakeProduct(): Product {
     return {

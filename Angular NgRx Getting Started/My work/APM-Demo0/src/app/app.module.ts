@@ -27,9 +27,9 @@ import { environment } from '../environments/environment';
     HttpClientInMemoryWebApiModule.forRoot(ProductData),
     UserModule,
     AppRoutingModule,
-    StoreModule.forRoot({}, {}),
+    StoreModule.forRoot({}),
     StoreDevtoolsModule.instrument({
-      name: 'APM Demo App Devtools',
+      name: 'APM Demo App DevTools',
       maxAge: 25,
       logOnly: environment.production,
     }),

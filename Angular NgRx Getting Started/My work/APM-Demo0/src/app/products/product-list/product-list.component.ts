@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 
+import { State } from '../state/product.reducer';
+
 import { Subscription } from 'rxjs';
 
 import { Product } from '../product';
@@ -24,7 +26,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   sub: Subscription;
 
   constructor(
-    private store: Store<any>,
+    private store: Store<State>,
     private productService: ProductService
   ) {}
 
