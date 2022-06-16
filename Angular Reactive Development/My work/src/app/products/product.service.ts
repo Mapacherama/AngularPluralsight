@@ -7,14 +7,23 @@ import {
   map,
   Observable,
   tap,
+  scan,
   throwError,
   shareReplay,
   BehaviorSubject,
+  Subject,
+  merge,
+  filter,
+  switchMap,
+  forkJoin,
+  of
 } from 'rxjs';
 
 import { Product } from './product';
 import { isNgTemplate } from '@angular/compiler';
 import { ProductCategoryService } from '../product-categories/product-category.service';
+import { SupplierService } from '../suppliers/supplier.service';
+import { Supplier } from '../suppliers/supplier';
 
 @Injectable({
   providedIn: 'root',
@@ -24,14 +33,21 @@ export class ProductService {
   private suppliersUrl = 'api/suppliers';
 
   products$ = this.http.get<Product[]>(this.productsUrl).pipe(
-    tap((data) => console.log('Products: ', JSON.stringify(data))),
+    // tap((data) => console.log('Products: ', JSON.stringify(data))),
     catchError(this.handleError)
   );
 
+  
+
   constructor(
     private http: HttpClient,
-    private productCategoryService: ProductCategoryService
+    private productCategoryService: ProductCategoryService, private supplierService: SupplierService
   ) {}
+
+  addProduct(newProduct?: Product) {
+    newProduct = newProduct || this.fakeProduct();
+    this.productInsertedSubject.next(newProduct);
+  }
 
   selectedProductChanged(selectedProductId: number): void {
     this.productSelectedSubject.next(selectedProductId);
@@ -67,6 +83,33 @@ export class ProductService {
     ),
     tap((product) => console.log('selectedProduct', product)),
     shareReplay(1)
+  );
+
+  selectedProductSuppliers$ = this.selectedProduct$
+  .pipe(
+    filter(product => Boolean(product)),
+    switchMap(selectedProduct => {
+      if (selectedProduct?.supplierIds) {
+        return forkJoin(selectedProduct.supplierIds.map(supplierId =>
+          this.http.get<Supplier>(`${this.suppliersUrl}/${supplierId}`)))
+      } else {
+        return of([]);
+      }
+    }),
+    tap(suppliers => console.log('product suppliers', JSON.stringify(suppliers)))
+  );
+
+  private productInsertedSubject = new Subject<Product>();
+  productInsertedAction$ = this.productInsertedSubject.asObservable();
+
+  productsWithAdd$ = merge(
+    this.productsWithCategory$,
+    this.productInsertedAction$
+  ).pipe(
+    scan(
+      (acc, value) => (value instanceof Array ? [...value] : [...acc, value]),
+      [] as Product[]
+    )
   );
 
   private fakeProduct(): Product {

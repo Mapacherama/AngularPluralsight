@@ -35,19 +35,19 @@ export class ProductListComponent {
   categorySelectedAction$ = this.categorySelectedSubject.asObservable();
 
   products$ = combineLatest([
-    this.productService.productsWithCategory$,
-    this.categorySelectedAction$
-  ])
-    .pipe(
-      map(([products, selectedCategoryId]) =>
-        products.filter(product =>
-          selectedCategoryId ? product.categoryId === selectedCategoryId : true
-        )),
-      catchError(err => {
-        this.errorMessage = err;
-        return EMPTY;
-      })
-    );
+    this.productService.productsWithAdd$,
+    this.categorySelectedAction$,
+  ]).pipe(
+    map(([products, selectedCategoryId]) =>
+      products.filter((product) =>
+        selectedCategoryId ? product.categoryId === selectedCategoryId : true
+      )
+    ),
+    catchError((err) => {
+      this.errorMessage = err;
+      return EMPTY;
+    })
+  );
 
   categories$ = this.productCategoryService.productCategories$.pipe(
     catchError((err) => {
@@ -62,7 +62,7 @@ export class ProductListComponent {
   ) {}
 
   onAdd(): void {
-    console.log('Not yet implemented');
+    this.productService.addProduct();
   }
 
   onSelected(categoryId: string): void {

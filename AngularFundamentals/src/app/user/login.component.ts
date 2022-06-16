@@ -1,6 +1,6 @@
-import { AuthService } from './auth.service';
-import { Component  } from "@angular/core";
-import { Router } from '@angular/router';
+import { Component } from '@angular/core'
+import { AuthService } from './auth.service'
+import { Router } from '@angular/router'
 
 @Component({
   templateUrl: './login.component.html',
@@ -8,23 +8,21 @@ import { Router } from '@angular/router';
     em { float:right; color:#E05C65; padding-left:10px; }
   `]
 })
-
 export class LoginComponent {
-  userName
+  username
   password
   mouseoverLogin
 
-  constructor(private AuthService:AuthService, private router: Router){
+  constructor(private authService:AuthService, private router:Router) {
 
   }
 
-login(formValues){
-  this.AuthService.loginUser(formValues.userName, formValues.password)
-  this.router.navigate(['events'])
-}
+  login(formValues) {
+    this.authService.loginUser(formValues.userName, formValues.password)
+    this.router.navigate(['events'])
+  }
 
-cancel() {
-  this.router.navigate(['events'])
-}
-
+  cancel() {
+    this.router.navigate(['events'])
+  }
 }

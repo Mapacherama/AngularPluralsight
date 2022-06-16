@@ -1,36 +1,34 @@
-import { IEvent } from './shared/event.model';
-import { ActivatedRoute } from '@angular/router';
-import { EventService } from './shared/event.service';
-import { Component, OnInit } from '@angular/core';
-import { ToastrService } from '../common/toastr.service';
+import { Component, OnInit } from '@angular/core'
+import { EventService } from './shared/event.service'
+import { ToastrService } from '../common/toastr.service'
+import { ActivatedRoute } from '@angular/router'
+import { IEvent } from './shared/index'
 
 @Component({
   template: `
   <div>
-    <h1>Upcoming Angular Events</h1>
+    <h1>Upcoming Angular 2 Events</h1>
     <hr/>
     <div class="row">
       <div *ngFor="let event of events" class="col-md-5">
-    <event-thumbnail #thumbnail (click) = "handleThumbnailClick(event.name)" [event]="event"></event-thumbnail>
-    </div>
+        <event-thumbnail (click)="handleThumbnailClick(event.name)" [event]="event"></event-thumbnail>
+      </div>
     </div>
   </div>
   `
 })
+export class EventsListComponent implements OnInit {
+  events:IEvent[]
 
-export class EventsListCompononent implements OnInit{
-  events: IEvent[];
-  constructor(private eventService: EventService, private toastr: ToastrService, private route:ActivatedRoute){
-
+  constructor(private eventService: EventService, private toastr: ToastrService, private route:ActivatedRoute) {
+    
   }
 
-  ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
+  ngOnInit() {
     this.events = this.route.snapshot.data['events']
   }
 
-  handleThumbnailClick(eventName: any){
-    this.toastr.success(eventName);
+  handleThumbnailClick(eventName) {
+    this.toastr.success(eventName)
   }
 }
