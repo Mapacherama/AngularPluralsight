@@ -1,9 +1,10 @@
-import { DebugElement } from "@angular/core";
+import { DebugElement, NO_ERRORS_SCHEMA } from "@angular/core";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { SessionListComponent } from "./session-list.component";
 import { AuthService } from "../../user/auth.service";
 import { VoterService } from "./voter.service";
 import { DurationPipe } from "../shared/duration.pipe";
+import { UpvoteComponent } from "./upvote.component";
 
 describe("SessionListComponent", () => {
   let mockAuthService,
@@ -20,11 +21,12 @@ describe("SessionListComponent", () => {
     };
     mockVoterService = { userHasVoted: () => true };
     TestBed.configureTestingModule({
-      declarations: [SessionListComponent, DurationPipe],
+      declarations: [SessionListComponent, DurationPipe, UpvoteComponent],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
         { provide: VoterService, useValue: mockVoterService },
       ],
+      schemas: [NO_ERRORS_SCHEMA],
     });
     fixture = TestBed.createComponent(SessionListComponent);
     component = fixture.componentInstance;
@@ -33,7 +35,7 @@ describe("SessionListComponent", () => {
   });
 
   describe("initial display", () => {
-    it("should have the correct title", () => {
+    it("should have the correct name", () => {
       component.sessions = [
         {
           name: "Session 1",
@@ -50,6 +52,10 @@ describe("SessionListComponent", () => {
       component.eventId = 4;
       component.ngOnChanges();
       fixture.detectChanges();
+
+      expect(element.querySelector("[well-title]").textContent).toContain(
+        "Session 1"
+      );
     });
   });
 });

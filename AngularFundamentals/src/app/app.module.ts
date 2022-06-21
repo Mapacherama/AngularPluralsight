@@ -1,6 +1,6 @@
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { RouterModule } from "@angular/router";
+import { PreloadAllModules, RouterModule } from "@angular/router";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 
@@ -33,15 +33,15 @@ import { appRoutes } from "./routes";
 import { Error404Component } from "./errors/404.component";
 import { AuthService } from "./user/auth.service";
 
-let toastr: Toastr = window["toastr"];
-let jQuery = window["$"];
+const toastr: Toastr = window["toastr"];
+const jQuery = window["$"];
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(appRoutes, { preloadingStrategy: PreloadAllModules }),
     HttpClientModule,
   ],
   declarations: [
